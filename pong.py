@@ -4,7 +4,8 @@
 import turtle
 import os
 from time import sleep
-import pygame.mixer
+
+import pygame
 
 win = turtle.Screen()
 win.title('Pong by Inspyre')
@@ -112,8 +113,14 @@ win.onkeypress(player_2_down, 'Down')
 # Main game-loop
 started = False
 
-pygame.mixer.init(frequency=480000, buffer=512,)
-pygame.mixer.music.load('background_loop.wav')
+pygame.mixer.init(frequency=48000)
+pygame.mixer.music.load('background_loop.mp3')
+
+sound_gamestart = pygame.mixer.Sound('game_start.wav')
+sound_paddle1 = pygame.mixer.Sound('hit_paddle_1.wav')
+sound_paddle2 = pygame.mixer.Sound('hit_paddle_2.wav')
+sound_score = pygame.mixer.Sound('score.wav')
+sound_topbottomhit = pygame.mixer.Sound('top_bottom_hit.wav')
 
 while True:
     win.update()
@@ -123,7 +130,8 @@ while True:
         pen.goto(0,0)
         pen.clear()
         pen.write('Get Ready!', align='center', font=('Uroob', 40, 'bold'))
-        os.system('aplay game_start.wav')
+        sound_gamestart.play()
+        sleep(sound_gamestart.get_length())
         pen.clear()
         pen.goto(0,260)
         pen.write("Player 1: 00 | Player 2: 00", align="center", font=('Uroob', 21, 'italic'))
@@ -143,13 +151,13 @@ while True:
     if ball.ycor() > 290:
         ball.sety(290)
         ball.dy *= -1
-        os.system("aplay top_bottom_hit.wav&")
+        sound_topbottomhit.play()
 
     # Bottom border
     if ball.ycor() < -290:
         ball.sety(-290)
         ball.dy *= -1
-        os.system("aplay top_bottom_hit.wav&")
+        sound_topbottomhit.play()
 
     # Right Goal
     if ball.xcor() > 390:
@@ -158,7 +166,7 @@ while True:
         print("Player 1 Scored!")
         p1_score += 1  # Increment Player One's score
         pen.clear()
-        os.system('aplay score.wav&')
+        sound_score.play()
         pen.goto(0, 0)
         pen.write('Player One Scored!', align='center', font=('Uroob', 40, 'bold'))
         sleep(2)
@@ -173,7 +181,7 @@ while True:
         print("Player 2 Scored!")
         p2_score += 1  # Increment Player Two's score
         pen.clear()
-        os.system('aplay score.wav&')
+        sound_score.play()
         pen.goto(0,0)
         pen.write('Player Two Scored!', align='center', font=('Uroob', 40, 'bold'))
         sleep(2)
@@ -187,14 +195,14 @@ while True:
 
     # Player 1 Ball Collision
     if ball.xcor() < -340 and player_1.ycor() + 50 > ball.ycor() > player_1.ycor() - 50:
-        os.system('aplay hit_paddle_1.wav&')
+        sound_paddle1.play()
         ball.setx(-340)
         ball.dx *= -1
 
 
     # Player 2 Ball Collision
     if ball.xcor() > 340 and player_2.ycor() + 50 > ball.ycor() > player_2.ycor() - 50:
-        os.system('aplay hit_paddle_2.wav&')
+        sound_paddle2.play()
         ball.setx(340)
         ball.dx *= -1
 
