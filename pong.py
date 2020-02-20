@@ -93,6 +93,22 @@ def player_2_down():
     y -= 20
     player_2.sety(y)
 
+paused = False
+
+def _toggle_pause_():
+    global paused
+    if paused:
+        paused = False
+        bgmusic.music.unpause()
+    else:
+        paused = True
+        bgmusic.music.pause()
+
+# Toggle paused
+def pause_game(no_toggle=False):
+    global paused
+    if no_toggle == False:
+        _toggle_pause_()
 
 # Bind keyboard
 win.listen()
@@ -110,21 +126,31 @@ win.onkeypress(player_2_up, 'Up')
 # Call player_2_down when player-two presses down Arrow
 win.onkeypress(player_2_down, 'Down')
 
+# Call pause_game when Escape key is pressed
+win.onkeypress(pause_game, 'Escape')
+
 # Main game-loop
 started = False
+        
+bgmusic = pygame.mixer
+bgmusic.init(frequency=48000)
+bgmusic.music.load('background_loop.mp3')
+sfx = pygame.mixer
+sfx.init(frequency=44100)
 
-pygame.mixer.init(frequency=48000)
-pygame.mixer.music.load('background_loop.mp3')
-
-sound_gamestart = pygame.mixer.Sound('game_start.wav')
-sound_paddle1 = pygame.mixer.Sound('hit_paddle_1.wav')
-sound_paddle2 = pygame.mixer.Sound('hit_paddle_2.wav')
-sound_score = pygame.mixer.Sound('score.wav')
-sound_topbottomhit = pygame.mixer.Sound('top_bottom_hit.wav')
+sound_gamestart = sfx.Sound('game_start.wav')
+sound_paddle1 = sfx.Sound('hit_paddle_1.wav')
+sound_paddle2 = sfx.Sound('hit_paddle_2.wav')
+sound_score = sfx.Sound('score.wav')
+sound_topbottomhit = sfx.Sound('top_bottom_hit.wav')
 
 while True:
     win.update()
 
+    while paused:
+        sleep(0.1)
+        win.update()
+    
     if not started:
         sleep(1)
         pen.goto(0,0)
@@ -135,10 +161,8 @@ while True:
         pen.clear()
         pen.goto(0,260)
         pen.write("Player 1: 00 | Player 2: 00", align="center", font=('Uroob', 21, 'italic'))
-        pygame.mixer.music.play()
+        bgmusic.music.play(-1)
         started = True
-
-
 
     # Move the ball
     ball.setx(ball.xcor() + ball.dx)
