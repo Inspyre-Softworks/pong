@@ -4,7 +4,8 @@
 import turtle
 import os
 from time import sleep
-import pygame.mixer
+
+import pygame
 
 win = turtle.Screen()
 win.title('Pong by Inspyre')
@@ -112,7 +113,7 @@ win.onkeypress(player_2_down, 'Down')
 # Main game-loop
 started = False
 
-pygame.mixer.init(frequency=48000, buffer=512)
+pygame.mixer.init(frequency=48000)
 pygame.mixer.music.load('background_loop.mp3')
 
 sound_gamestart = pygame.mixer.Sound('game_start.wav')
