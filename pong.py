@@ -99,8 +99,10 @@ def _toggle_pause_():
     global paused
     if paused:
         paused = False
+        bgmusic.music.unpause()
     else:
         paused = True
+        bgmusic.music.pause()
 
 # Toggle paused
 def pause_game(no_toggle=False):
