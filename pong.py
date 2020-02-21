@@ -13,14 +13,12 @@ win.bgcolor('black')
 win.setup(width=800, height=600)
 win.tracer(0)
 
-
 # Scoreboard
 #  =========
 #
 # Initialize with the scores at 0
 p1_score = 0
 p2_score = 0
-
 
 # Player 1
 # ========
@@ -50,8 +48,8 @@ ball.penup()
 ball.goto(0, 0)
 
 ## Move ball by two pixels to x and y every time
-ball.dx = 0.08
-ball.dy = 0.08
+ball.dx = 5
+ball.dy = 5
 
 # Score writer
 pen = turtle.Turtle()
@@ -93,22 +91,39 @@ def player_2_down():
     y -= 20
     player_2.sety(y)
 
+
+def write_score():
+    pen.clear()
+    pen.goto(0, 250)
+    pen.write(f"Player 1: {p1_score} | Player 2: {p2_score}", align="center", font=('Uroob', 21, 'italic'))
+
+
 paused = False
+
+while paused:
+    sleep(.5)
+
 
 def _toggle_pause_():
     global paused
     if paused:
         paused = False
         bgmusic.music.unpause()
+        write_score()
     else:
         paused = True
         bgmusic.music.pause()
+        pen.clear()
+        pen.goto(0, 0)
+        pen.write('Paused', align='center', font=('Uroob', 40, 'bold'))
+
 
 # Toggle paused
 def pause_game(no_toggle=False):
     global paused
     if no_toggle == False:
         _toggle_pause_()
+
 
 # Bind keyboard
 win.listen()
@@ -118,7 +133,6 @@ win.onkeypress(player_1_up, 'w')
 
 # Call player_1_down when player-one presses "s"
 win.onkeypress(player_1_down, 's')
-
 
 # Call player_2_up when player-two presses Up Arrow
 win.onkeypress(player_2_up, 'Up')
@@ -131,7 +145,7 @@ win.onkeypress(pause_game, 'Escape')
 
 # Main game-loop
 started = False
-        
+
 bgmusic = pygame.mixer
 bgmusic.init(frequency=48000)
 bgmusic.music.load('background_loop.mp3')
@@ -144,30 +158,20 @@ sound_paddle2 = sfx.Sound('hit_paddle_2.wav')
 sound_score = sfx.Sound('score.wav')
 sound_topbottomhit = sfx.Sound('top_bottom_hit.wav')
 
-while True:
+
+def move_ball():
+    global p1_score, p2_score, win, ball
+
     win.update()
 
     while paused:
         sleep(0.1)
         win.update()
-    
-    if not started:
-        sleep(1)
-        pen.goto(0,0)
-        pen.clear()
-        pen.write('Get Ready!', align='center', font=('Uroob', 40, 'bold'))
-        sound_gamestart.play()
-        sleep(sound_gamestart.get_length())
-        pen.clear()
-        pen.goto(0,260)
-        pen.write("Player 1: 00 | Player 2: 00", align="center", font=('Uroob', 21, 'italic'))
-        bgmusic.music.play(-1)
-        started = True
+
 
     # Move the ball
     ball.setx(ball.xcor() + ball.dx)
     ball.sety(ball.ycor() + ball.dy)
-
     # Border Collision
     # ================
 
@@ -206,13 +210,12 @@ while True:
         p2_score += 1  # Increment Player Two's score
         pen.clear()
         sound_score.play()
-        pen.goto(0,0)
+        pen.goto(0, 0)
         pen.write('Player Two Scored!', align='center', font=('Uroob', 40, 'bold'))
         sleep(2)
         pen.clear()
         pen.goto(0, 260)
         pen.write(f"Player 1: {p1_score} | Player 2: {p2_score}", align="center", font=('Uroob', 21, 'italic'))
-
 
     # Paddle and Ball Collision
     # =========================
@@ -223,7 +226,6 @@ while True:
         ball.setx(-340)
         ball.dx *= -1
 
-
     # Player 2 Ball Collision
     if ball.xcor() > 340 and player_2.ycor() + 50 > ball.ycor() > player_2.ycor() - 50:
         sound_paddle2.play()
@@ -233,3 +235,8 @@ while True:
 
 
 
+    win.ontimer(move_ball, 30)
+
+
+move_ball()
+turtle.mainloop()
