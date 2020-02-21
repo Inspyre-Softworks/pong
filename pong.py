@@ -3,6 +3,8 @@
 
 import turtle
 import os
+import time
+import datetime
 from time import sleep
 
 import pygame
@@ -58,7 +60,7 @@ pen.color('white')
 pen.penup()
 pen.hideturtle()
 pen.goto(0, 260)
-pen.write("Player 1: 00 | Player 2: 00", align="center", font=('Uroob', 21, 'italic'))
+pen.write("Player 1: 00 | {timer} | Player 2: 00", align="center", font=('Uroob', 21, 'italic'))
 
 
 # Logic
@@ -95,12 +97,19 @@ def player_2_down():
 def write_score():
     pen.clear()
     pen.goto(0, 250)
-    pen.write(f"Player 1: {p1_score} | Player 2: {p2_score}", align="center", font=('Uroob', 21, 'italic'))
+    time_now = time.time()
+    dif = time_now - time_start
+    dif_time = str(datetime.timedelta(seconds=dif))
+    dif_splt = dif_time.split(sep=':')
+    timer = str(f'{dif_splt[1]}m {round(float(dif_splt[2]))}s')
+    pen.write(f"Player 1: {p1_score} | {timer} | Player 2: {p2_score}", align="center", font=('Uroob', 21, 'italic'))
 
 
 paused = False
+paused_seconds = 0
 
 while paused:
+    paused_seconds += .5
     sleep(.5)
 
 
@@ -158,16 +167,41 @@ sound_paddle2 = sfx.Sound('hit_paddle_2.wav')
 sound_score = sfx.Sound('score.wav')
 sound_topbottomhit = sfx.Sound('top_bottom_hit.wav')
 
+time_start = time.time()
+
+seconds_paused = 0
+last_paused = False
+
+
+def update_time():
+    global time_start, paused, seconds_paused, last_paused
+    while not paused:
+        time_now = time.time()
+        dif = time_now - time_start
+        dif_time = str(datetime.timedelta(seconds=dif))
+        dif_splt = dif_time.split(sep=':')
+        timer = str(f'{dif_splt[1]}m {round(float(dif_splt[2]))}s')
+        return timer
+
 
 def move_ball():
-    global p1_score, p2_score, win, ball
+    global p1_score, p2_score, win, ball, seconds_paused, time_start
 
     win.update()
 
     while paused:
         sleep(0.1)
+        seconds_paused += .1
+        print(seconds_paused)
         win.update()
 
+    if seconds_paused >= .1:
+        time_start += seconds_paused
+        seconds_paused = 0
+        write_score()
+
+
+    write_score()
 
     # Move the ball
     ball.setx(ball.xcor() + ball.dx)
@@ -231,9 +265,6 @@ def move_ball():
         sound_paddle2.play()
         ball.setx(340)
         ball.dx *= -1
-
-
-
 
     win.ontimer(move_ball, 30)
 
