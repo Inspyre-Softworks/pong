@@ -13,7 +13,7 @@ The above command would start the pong game with both players being named.
   - Player two would be named **Steve**(*~p2=Steve*) and would have a paddle that is **green** in color (*~p2c=green*).
   - With the +v flag (or the \~~verbose modifier argument) the program will run in verbose mode where it will spit a bunch of output to it's console that the program believes you might find useful.
   
-![](docs/screen1.png?raw=true)
+![Screenshot 1](https://raw.github.com/username/repo/master/docs/screen1.png)
 
 ## Starting without arguments
   
