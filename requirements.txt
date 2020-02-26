@@ -1,3 +1,7 @@
+colorlog
+PySimpleGUIQt
+imwatchingyou
+PySimpleGUI
 pygame
-
-
+pyyaml
+pyfiglet
