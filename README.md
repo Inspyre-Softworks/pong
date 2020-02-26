@@ -33,5 +33,7 @@ See the Pong by [Inspyre Softworks wiki](https://github.com/tayjaybabee/pong/wik
 
 
  <a name="p1arg">1</a>: To find out more about this argument please visit the wiki.
+ 
+ 
  <a name="p1carg">2</a>: This argument takes two types of strings. One containing html color hexcode, or one containing a color name. 
  
