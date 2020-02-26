@@ -26,12 +26,8 @@ $>./__main__.py # Note that there are no arguments present
 
 The game will just be pre-empted by the InsPyPong Start screen which will allow you to configure your two pong players.
 
-[screenshot here]
+![Screenshot 2](https://raw.github.com/Inspyre-Softworks/pong/dev1.6/docs/screen2.png?raw=true)
 
-  
-  
-  
-  
 See the Pong by [Inspyre Softworks wiki](https://github.com/tayjaybabee/pong/wiki) for more detailed information.
 
 
