@@ -21,7 +21,7 @@ log.debug('Logger started')
 
 parser = argparse.ArgumentParser(
     prog='Pong by Inspyre Softworks',
-    usage='python3 __main__.py ~p1=<P1 NAME> ~p2c=<COLOR NAME OR HEX STRING> ~p2=<P2 NAME> ~p2c=<COLOR NAME OR HEX '
+    usage='python3 __main__.py ~p1=<P1 NAME> ~p1c=<COLOR NAME OR HEX STRING> ~p2=<P2 NAME> ~p2c=<COLOR NAME OR HEX '
           'STRING>',
     description='Pong (by Inspyre Softworks) is just as it seems; our version of the Atari hit; Pong',
     epilog='Enjoy your game session',
