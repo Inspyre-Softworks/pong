@@ -1,3 +1,4 @@
+
 import PySimpleGUIQt as qt
 
 
@@ -134,8 +135,8 @@ class StartScreen:
                 log.info('Starting game!')
                 log.debug('Concatenating start command for game')
 
-                cmd = [sys.executable, 'old_pong.py', f'~p1={values["P1_NAME"]}', f'~p1c={values["P1_PADDLE_COLOR_INPUT"]}',
-                       f'~p2={values["P2_NAME"]}', f'~p2c={values["P2_PADDLE_COLOR_INPUT"]}']
+                cmd = [sys.executable, 'old_pong.py', f'~p1={values["P1_NAME"]}', f'~p1c={self.paddle1_color}',
+                       f'~p2={values["P2_NAME"]}', f'~p2c={self.paddle2_color}']
 
                 game = subprocess.Popen(cmd)
                 game.communicate()
@@ -151,15 +152,23 @@ class StartScreen:
                 continue
 
             # If the Debugger button is pressed then an imwatchingyou debugger window shall appear
-            #
-            # Dev Note:
-            ##
-            # if event == 'DEBUG_BUTTON':
+
+            if event == 'DEBUG_BUTTON':
+                try:
+                    from lib.helpers.errors.dev import NotYetImplementedError
+                    raise NotYetImplementedError
+                except NotYetImplementedError as e:
+                    from lib.gui.popups.warnings import not_yet_implemented
+                    print(e.msg)
+                    print(e.info)
+                    not_yet_implemented()
             #     imwatchingyou.show_debugger_window(location=(0, 0))
+
 
             # If the user presses the Mischief Managed button, the dev.key file will be nullified
             if event == 'MISCHIEF_MANAGED':
                 from lib.helpers.dev import dev_complete
+                from lib.conf.paths import dev_key
 
                 confirm = qt.PopupYesNo('Are you sure you want to disable dev-mode?',
                                         title='Disable Dev-Mode Confirm',
@@ -168,7 +177,7 @@ class StartScreen:
                                         keep_on_top=True)
 
                 if confirm.lower() == 'yes':
-                    dev_complete()
+                    dev_complete(dev_key)
                     for field in dev_fields:
                         window[field].update(visible=False)
                         window.refresh()

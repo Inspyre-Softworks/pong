@@ -1,3 +1,4 @@
+colorlog
 PySimpleGUIQt
 imwatchingyou
 PySimpleGUI

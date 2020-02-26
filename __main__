@@ -1,44 +1,23 @@
 #!/usr/bin/env python3
 
+import sys
 import argparse
+import lib.helpers.dev as dev
+from lib.helpers.logger import start
 
-figlet_shown = False
+if '+V' in sys.argv:
+    print('Logging even before parsing arguments')
+    debug = True
+else:
+    debug = False
 
+help_mode = False
 
-def _mm(key_path):
-    with open(key_path, 'w') as key_file:
-        key_file.write('Mischief Managed!')
+if '~h' in sys.argv or '~~help' in sys.argv:
+    help_mode = True
 
-
-def compare_key(key_path):
-    global figlet_shown
-    passphrase = 'I solemnly swear that I am up to no good.'
-    with open(key_path) as keyfile:
-        first_line = keyfile.readline().strip
-        if first_line() == passphrase:
-            from pyfiglet import Figlet
-
-            banner = 'Dev-Mode'
-            if not figlet_shown:
-                custom_fig = Figlet(font='epic')
-                print(custom_fig.renderText(banner))
-                print('Welcome developer, or curious user...')
-                figlet_shown = True
-            return True
-
-    return False
-
-
-def check_dev_key():
-    from os import path, getcwd
-
-    print(getcwd())
-    print(str(getcwd() + '/dev.key'))
-    if path.isfile(str(getcwd() + '/dev.key')):
-        print('Found dev.key file')
-        return True
-    return False
-
+log = start('InsPyPong', debug)
+log.debug('Logger started')
 
 parser = argparse.ArgumentParser(
     prog='Pong by Inspyre Softworks',
@@ -51,16 +30,15 @@ parser = argparse.ArgumentParser(
     prefix_chars='~+'
     )
 
-if check_dev_key():
-    import os
+if dev.check():
+    if help_mode:
+        log.debug('Adding dev-mode to list of arguments')
 
-    keypath = str(os.getcwd() + '/dev.key')
-    if os.path.isfile(keypath):
-        if compare_key(keypath):
-            parser.add_argument('+dev', '+dev-mode',
-                                action='store_true',
-                                help='Super-Duper Dev Mode',
-                                dest='dev_mode')
+    parser.add_argument(
+        '+dev', '+dev-mode',
+        action='store_true',
+        help='Super-Duper Dev Mode',
+        dest='dev_mode')
 
 # Assign arguments that will set attributes for player 1
 parser.add_argument(
@@ -102,32 +80,50 @@ parser.add_argument(
     help='Designate the color you\'d like the Player Two paddle to be',
     )
 
+# Assign arguments that will allow changing of log output verbosity
+parser.add_argument(
+    '+v', '~~verbose',
+    required=False,
+    action='store_true',
+    default=False,
+    dest='verbose',
+    help='Program will output all information that it finds might be useful to the end-user(s)'
+    )
+
+parser.add_argument(
+    '+D', '~~debug',
+    required=False,
+    action='store_true',
+    default=False,
+    dest='debug',
+    help='Program will output all logs. (This data is essentially useless to non-developers or non-curious)'
+    )
+
+parser.add_argument(
+    '+q', '~~quiet',
+    required=False,
+    action='store_true',
+    default=True,
+    dest='quiet',
+    help='Program will supress all logs that are not of level WARNING and above.'
+    )
+
 # ToDo:
 #     Assign arguments that will set attributes for the Ball
 #     Assign arguments that will set attributes for the playing field/screen
 #     Assign arguments that will redirect logging output (maybe)
 
 args = parser.parse_args()
-from lib.helpers.logger import start
 
-log = start('InsPyPong')
-log.debug('Logger started')
+# If we're in dev-mode, print the dev-mode banner
+if args.dev_mode:
+    dev.print_banner()
+
 log.debug(f'My runtime configuration is: {args}')
 
 if args.p1 == 'Player One' or args.p2 == 'Player Two':
     from lib.pong.gui.start_screen import StartScreen
 
-    dev_mode = False
-
-    if check_dev_key():
-        import os
-
-        keypath = str(os.getcwd() + '/dev.key')
-        if os.path.isfile(keypath):
-            if compare_key(keypath):
-                if args.dev_mode:
-                    dev_mode = True
-
-    StartScreen(args.p1, args.p2, dev_mode=dev_mode)
+    StartScreen(args.p1, args.p2, dev_mode=args.dev_mode)
 else:
     import old_pong
