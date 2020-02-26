@@ -30,6 +30,8 @@ parser = argparse.ArgumentParser(
     prefix_chars='~+'
     )
 
+dev_mode = False
+
 if dev.check():
     if help_mode:
         log.debug('Adding dev-mode to list of arguments')
@@ -39,6 +41,8 @@ if dev.check():
         action='store_true',
         help='Super-Duper Dev Mode',
         dest='dev_mode')
+
+    dev_mode = True
 
 # Assign arguments that will set attributes for player 1
 parser.add_argument(
@@ -116,14 +120,15 @@ parser.add_argument(
 args = parser.parse_args()
 
 # If we're in dev-mode, print the dev-mode banner
-if args.dev_mode:
-    dev.print_banner()
+if dev_mode:
+    if args.dev_mode:
+        dev.print_banner()
 
 log.debug(f'My runtime configuration is: {args}')
 
 if args.p1 == 'Player One' or args.p2 == 'Player Two':
     from lib.pong.gui.start_screen import StartScreen
 
-    StartScreen(args.p1, args.p2, dev_mode=args.dev_mode)
+    StartScreen(args.p1, args.p2, dev_mode=dev_mode)
 else:
     import old_pong
