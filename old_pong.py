@@ -3,11 +3,53 @@
 
 import turtle
 import os
-import time
-import datetime
 from time import sleep
 
 import pygame
+
+import argparse
+
+parser = argparse.ArgumentParser(prog='InsPyPong',
+                                 usage='pong ~p1=Taylor ~pc1=\'pink\' ~p2=Steve ~pc2=\'orange\' +v',
+                                 description='Simple project for a simple (but complete) pong game',
+                                 prefix_chars='~+',
+                                 add_help=True)
+
+parser.add_argument('~p1', '~~p1-name',
+                    dest='P1_NAME',
+                    action='store',
+                    default='Player One',
+                    help='Use this argument to tell the program what name Player One would like displayed in-game and '
+                         'in scoreboards')
+
+parser.add_argument('~p1c', '~~paddle1-color',
+                    dest='PADDLE1_COLOR',
+                    default='red',
+                    action='store',
+                    help='Use this argument to specify what color Player One\'s paddle will be')
+
+parser.add_argument('~p2', '~~p2-name',
+                    dest='P2_NAME',
+                    default='Player Two',
+                    action='store',
+                    help='Use this argument to tell the program what name Player Two would like displayed in-game and '
+                         'in scoreboards')
+
+parser.add_argument('~p2c', '~~paddle2-color',
+                    dest='PADDLE2_COLOR',
+                    default='white',
+                    action='store',
+                    help='Use this argument to specify what color Player Two\'s paddle will be')
+
+parser.add_argument('+v', '~~verbose',
+                    dest='verbose',
+                    action='store_true',
+                    help='Use this flag to tell the program to announce all there is to announce as it works.')
+
+args = parser.parse_args()
+
+print(args)
+
 
 win = turtle.Screen()
 win.title('Pong by Inspyre')
@@ -24,19 +66,21 @@ p2_score = 0
 
 # Player 1
 # ========
+player_1_name = args.P1_NAME
 player_1 = turtle.Turtle()
 player_1.speed(0)
 player_1.shape('square')
-player_1.color('blue')
+player_1.color(args.PADDLE1_COLOR)
 player_1.shapesize(stretch_wid=5, stretch_len=1)
 player_1.penup()
 player_1.goto(-350, 0)
 
 # Player 2
+player_2_name = args.P2_NAME
 player_2 = turtle.Turtle()
 player_2.speed(0)
 player_2.shape('square')
-player_2.color('blue')
+player_2.color(args.PADDLE2_COLOR)
 player_2.shapesize(stretch_wid=5, stretch_len=1)
 player_2.penup()
 player_2.goto(+350, 0)
@@ -50,8 +94,8 @@ ball.penup()
 ball.goto(0, 0)
 
 ## Move ball by two pixels to x and y every time
-ball.dx = 5
-ball.dy = 5
+ball.dx = 0.08
+ball.dy = 0.08
 
 # Score writer
 pen = turtle.Turtle()
@@ -60,7 +104,7 @@ pen.color('white')
 pen.penup()
 pen.hideturtle()
 pen.goto(0, 260)
-pen.write("Player 1: 00 | {timer} | Player 2: 00", align="center", font=('Uroob', 21, 'italic'))
+pen.write(f"{player_1_name}: 00 | {player_2_name}: 00", align="center", font=('Uroob', 21, 'italic'))
 
 
 # Logic
@@ -94,23 +138,7 @@ def player_2_down():
     player_2.sety(y)
 
 
-def write_score():
-    pen.clear()
-    pen.goto(0, 250)
-    time_now = time.time()
-    dif = time_now - time_start
-    dif_time = str(datetime.timedelta(seconds=dif))
-    dif_splt = dif_time.split(sep=':')
-    timer = str(f'{dif_splt[1]}m {round(float(dif_splt[2]))}s')
-    pen.write(f"Player 1: {p1_score} | {timer} | Player 2: {p2_score}", align="center", font=('Uroob', 21, 'italic'))
-
-
 paused = False
-paused_seconds = 0
-
-while paused:
-    paused_seconds += .5
-    sleep(.5)
 
 
 def _toggle_pause_():
@@ -118,13 +146,9 @@ def _toggle_pause_():
     if paused:
         paused = False
         bgmusic.music.unpause()
-        write_score()
     else:
         paused = True
         bgmusic.music.pause()
-        pen.clear()
-        pen.goto(0, 0)
-        pen.write('Paused', align='center', font=('Uroob', 40, 'bold'))
 
 
 # Toggle paused
@@ -167,45 +191,30 @@ sound_paddle2 = sfx.Sound('hit_paddle_2.wav')
 sound_score = sfx.Sound('score.wav')
 sound_topbottomhit = sfx.Sound('top_bottom_hit.wav')
 
-time_start = time.time()
-
-seconds_paused = 0
-last_paused = False
-
-
-def update_time():
-    global time_start, paused, seconds_paused, last_paused
-    while not paused:
-        time_now = time.time()
-        dif = time_now - time_start
-        dif_time = str(datetime.timedelta(seconds=dif))
-        dif_splt = dif_time.split(sep=':')
-        timer = str(f'{dif_splt[1]}m {round(float(dif_splt[2]))}s')
-        return timer
-
-
-def move_ball():
-    global p1_score, p2_score, win, ball, seconds_paused, time_start
-
+while True:
     win.update()
 
     while paused:
         sleep(0.1)
-        seconds_paused += .1
-        print(seconds_paused)
         win.update()
 
-    if seconds_paused >= .1:
-        time_start += seconds_paused
-        seconds_paused = 0
-        write_score()
-
-
-    write_score()
+    if not started:
+        sleep(1)
+        pen.goto(0, 0)
+        pen.clear()
+        pen.write('Get Ready!', align='center', font=('Uroob', 40, 'bold'))
+        sound_gamestart.play()
+        sleep(sound_gamestart.get_length())
+        pen.clear()
+        pen.goto(0, 260)
+        pen.write(f"{player_1_name}: 00 | {player_2_name}: 00", align="center", font=('Uroob', 21, 'italic'))
+        bgmusic.music.play(-1)
+        started = True
 
     # Move the ball
     ball.setx(ball.xcor() + ball.dx)
     ball.sety(ball.ycor() + ball.dy)
+
     # Border Collision
     # ================
 
@@ -230,11 +239,12 @@ def move_ball():
         pen.clear()
         sound_score.play()
         pen.goto(0, 0)
-        pen.write('Player One Scored!', align='center', font=('Uroob', 40, 'bold'))
+        pen.write(f'{player_1_name} Scored!', align='center', font=('Uroob', 40, 'bold'))
         sleep(2)
         pen.clear()
         pen.goto(0, 260)
-        pen.write(f"Player 1: {p1_score} | Player 2: {p2_score}", align="center", font=('Uroob', 21, 'italic'))
+        pen.write(f"{player_1_name}: {p1_score} | {player_2_name}: {p2_score}", align="center", font=('Uroob', 21,
+                                                                                                  'italic'))
 
     # Left goal
     if ball.xcor() < -390:
@@ -245,11 +255,12 @@ def move_ball():
         pen.clear()
         sound_score.play()
         pen.goto(0, 0)
-        pen.write('Player Two Scored!', align='center', font=('Uroob', 40, 'bold'))
+        pen.write(f'{player_2_name} Scored!', align='center', font=('Uroob', 40, 'bold'))
         sleep(2)
         pen.clear()
         pen.goto(0, 260)
-        pen.write(f"Player 1: {p1_score} | Player 2: {p2_score}", align="center", font=('Uroob', 21, 'italic'))
+        pen.write(f"{player_1_name}: {p1_score} | {player_2_name}: {p2_score}", align="center", font=('Uroob', 21,
+                                                                                                  'italic'))
 
     # Paddle and Ball Collision
     # =========================
@@ -266,8 +277,4 @@ def move_ball():
         ball.setx(340)
         ball.dx *= -1
 
-    win.ontimer(move_ball, 30)
 
-
-move_ball()
-turtle.mainloop()
