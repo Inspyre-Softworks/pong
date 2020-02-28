@@ -109,15 +109,15 @@ parser.add_argument(
     action='store_true',
     default=True,
     dest='quiet',
-    help='Program will supress all logs that are not of level WARNING and above.'
+    help='Program will suppress all logs that are not of level WARNING and above.'
     )
 
 # This shouldn't be confused with +v (the verbose shortcode)
 parser.add_argument(
     '~v', '~~version',
     action='version',
-    version='rc1.6.2',
-    help='Print\'s the full version of the program and exits.'
+    version='rc1.6.3',
+    help='Prints the full version of the program and exits.'
     )
 
 # ToDo:
