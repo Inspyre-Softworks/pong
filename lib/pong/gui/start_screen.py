@@ -1,6 +1,4 @@
-
 import PySimpleGUIQt as qt
-
 
 
 class StartScreen:
@@ -18,7 +16,7 @@ class StartScreen:
                              background_color='black',
                              text_color='white',
                              focus=True)
-             ],
+                ],
             [
                 qt.Text('Paddle Color:', background_color='black'),
                 qt.InputText(self.paddle1_color,
@@ -29,8 +27,8 @@ class StartScreen:
                                       key='P1_PADDLE_COLOR',
                                       button_color=('white', self.paddle1_color),
                                       target=(qt.ThisRow, -1))
-             ]
-        ]
+                ]
+            ]
         return layout
 
     def _p2_frame(self):
@@ -40,16 +38,17 @@ class StartScreen:
                 qt.InputText(self.p2_name, key='P2_NAME',
                              background_color='black',
                              text_color='white')
-            ],
+                ],
             [
                 qt.Text('Paddle Color:', background_color='black'),
-                qt.InputText('', key='P2_PADDLE_COLOR_INPUT', visible=self.dev_mode, enable_events=True),
+                qt.InputText(self.paddle2_color, key='P2_PADDLE_COLOR_INPUT', visible=self.dev_mode,
+                             enable_events=True),
                 qt.ColorChooserButton('Select',
                                       key='P2_PADDLE_COLOR',
                                       button_color=('white', self.paddle2_color),
                                       target=(qt.ThisRow, -1))
+                ]
             ]
-        ]
         return layout
 
     def _button_frame(self):
@@ -57,12 +56,12 @@ class StartScreen:
             [
                 qt.Button('Play', bind_return_key=True, key='PLAY_BUTTON'),
                 qt.Button('Cancel', key='CANCEL_BUTTON')
-             ],
+                ],
             [
                 qt.Button('Debugger', key='DEBUG_BUTTON', visible=self.dev_mode),
                 qt.Button('Mischief Managed!', visible=self.dev_mode, key='MISCHIEF_MANAGED')
+                ]
             ]
-        ]
 
         return layout
 
@@ -71,10 +70,10 @@ class StartScreen:
             [qt.Frame('Player One:', self._p1_frame(), background_color='black')],
             [qt.Frame('Player Two:', self._p2_frame(), background_color='black')],
             [qt.Frame('', self._button_frame())]
-        ]
+            ]
         return layout
 
-    def __init__(self, p1_name, p2_name, dev_mode=False):
+    def __init__(self, p1_name, p1c, p2_name, p2c, dev_mode=False):
         """
 
         Create a new instance of StartScreen
@@ -94,10 +93,10 @@ class StartScreen:
 
         # Set default paddle color values
         self.p1_name = p1_name
-        self.paddle1_color = '#ff0000'
+        self.paddle1_color = p1c
 
         self.p2_name = p2_name
-        self.paddle2_color = 'blue'
+        self.paddle2_color = p2c
 
         layout = self._layout()
 
@@ -126,11 +125,14 @@ class StartScreen:
             # Same as above block, but for player 2
             if event == 'P2_PADDLE_COLOR_INPUT':
                 self.paddle2_color = values['P2_PADDLE_COLOR_INPUT']
+                log.debug('A new color was picked for paddle 2')
+                log.debug('Changing color of paddle 2')
                 window['P2_PADDLE_COLOR'].update(button_color=('white', self.paddle2_color))
 
             if event == 'PLAY_BUTTON':
                 import subprocess
                 import sys
+
                 log.debug('User indicated a desire to start the game.')
                 log.info('Starting game!')
                 log.debug('Concatenating start command for game')
@@ -140,7 +142,6 @@ class StartScreen:
 
                 game = subprocess.Popen(cmd)
                 game.communicate()
-
 
             # If the Cancel button or X button are clicked, the window closes and the program exits
             if event is None or event == 'CANCEL_BUTTON':
@@ -156,14 +157,15 @@ class StartScreen:
             if event == 'DEBUG_BUTTON':
                 try:
                     from lib.helpers.errors.dev import NotYetImplementedError
+
                     raise NotYetImplementedError
                 except NotYetImplementedError as e:
                     from lib.gui.popups.warnings import not_yet_implemented
+
                     print(e.msg)
                     print(e.info)
                     not_yet_implemented()
             #     imwatchingyou.show_debugger_window(location=(0, 0))
-
 
             # If the user presses the Mischief Managed button, the dev.key file will be nullified
             if event == 'MISCHIEF_MANAGED':
@@ -181,4 +183,3 @@ class StartScreen:
                     for field in dev_fields:
                         window[field].update(visible=False)
                         window.refresh()
-

@@ -37,7 +37,7 @@ parser.add_argument('~p2', '~~p2-name',
 
 parser.add_argument('~p2c', '~~paddle2-color',
                     dest='PADDLE2_COLOR',
-                    default='white',
+                    default='blue',
                     action='store',
                     help='Use this argument to specify what color Player Two\'s paddle will be')
 
@@ -47,8 +47,6 @@ parser.add_argument('+v', '~~verbose',
                     help='Use this flag to tell the program to announce all there is to announce as it works.')
 
 args = parser.parse_args()
-
-print(args)
 
 
 win = turtle.Screen()

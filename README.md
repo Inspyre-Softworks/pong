@@ -4,7 +4,7 @@
 
 ```bash
 
-$>./__main__.py ~p1=Taylor ~p1c=pink ~p2=Steve ~p2c=green +v 
+$>./InsPyPong ~p1=Taylor ~p1c=pink ~p2=Steve ~p2c=green +v 
 
 ```
 
@@ -21,7 +21,7 @@ The above command would start the pong game with both players being named.
 There is no problem with just starting the game like so:
 
 ```bash
-$>./__main__.py # Note that there are no arguments present
+$>./InsPyPong.py # Note that there are no arguments present
 ```
 
 The game will just be pre-empted by the InsPyPong Start screen which will allow you to configure your two pong players.

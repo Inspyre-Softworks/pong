@@ -33,7 +33,7 @@ def _phrase_matches(key_path):
             l_log.debug(f'Found "{first_line()}" in keyfile')
 
         if first_line() == passphrase:
-            l_log.warning("You can now see what was once unseen, only troublemakers would be so keen.")
+            l_log.debug('We have a match')
             return True
         else:
             l_log.warning('Your access has been denied. Worry not, better than you have tried.')
@@ -93,5 +93,7 @@ def print_banner():
     l_log.debug('Banner printed.')
     l_log.debug('Printing welcome...')
     print(welcome)
+    m_logger = logging.getLogger(f'{logger_name}.MaraudersMap')
+    l_log.warning('You can now see what was once unseen, only troublemakers would be so keen.')
 
 
