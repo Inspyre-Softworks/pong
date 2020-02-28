@@ -127,6 +127,8 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+dev_mode = False
+
 # If we're in dev-mode, print the dev-mode banner
 if dev_unlocked:
     if args.dev_mode:
